@@ -8,7 +8,7 @@ Integrantes:
 
 ---
 
-## Orientações para desenvolvimento do trabalho:
+# Orientações para desenvolvimento do trabalho:
 
 
 ## 📌 1. Tema
