@@ -1,6 +1,6 @@
-## Diagrama de Classes no padrão UML
+# Diagrama de Classes no padrão UML
 
-# Introdução ao Modelo de Classes
+## Introdução ao Modelo de Classes
 
 Este documento apresenta o Diagrama de Classes UML (Linguagem de Modelagem Unificada), que serve como um mapa estrutural do nosso sistema de pedidos.
 
