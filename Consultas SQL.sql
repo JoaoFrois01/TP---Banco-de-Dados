@@ -1,9 +1,8 @@
-# Elaborar consultas SQL com as seguintes características (cada consulta deverá incluir, no mínimo, 3 tabelas)  
+### Elaborar consultas SQL com as seguintes características (cada consulta deverá incluir, no mínimo, 3 tabelas)  
 
-## Duas consultas envolvendo operações de junção.
+### Duas consultas envolvendo operações de junção.
 
-### Consulta 1: Listar Disciplinas por Curso e seu Professor Coordenador
-Esta consulta recupera o nome de todas as Disciplinas de um curso específico, o nome do Curso ao qual elas pertencem, e o nome do Professor que coordena esse curso.
+### Consulta 1: Listar Disciplinas por Curso e seu Professor Coordenador esta consulta recupera o nome de todas as Disciplinas de um curso específico, o nome do Curso ao qual elas pertencem, e o nome do Professor que coordena esse curso.
 Perguntas Respondidas: Quais disciplinas pertencem ao curso 'Sistemas de Informação' e quem o coordena? (Assumindo um curso com id_curso = 101)
 
 SELECT
@@ -43,8 +42,7 @@ WHERE
     S.numero_semestre = '2024/2'
     AND T.codigo_turma = 'BD-2024';
 
-## Três consultas envolvendo operações de conjuntos (união, interseção e diferença).
-
+### Três consultas envolvendo operações de conjuntos (união, interseção e diferença).
 ### União
 Esta consulta lista o nome e o email de todos os indivíduos que são Professores OU Alunos e que estão alocados/cursando o Semestre '2025/1' de alguma forma.
 Lógica: Combina professores de uma turma do semestre com alunos que cursam o mesmo semestre.
@@ -79,7 +77,7 @@ WHERE
 
 
 ### Interseção 
-Esta consulta lista o nome e o email dos Professores que ministram alguma Turma E, ao mesmo tempo, são Coordenadores de algum Curso.
+Esta consulta lista o nome e o email dos Professores que ministram alguma Turma e ao mesmo tempo, são Coordenadores de algum Curso.
 Lógica: Encontra os professores que têm o papel de docente e o papel de gestão coordenador.
 
 
@@ -104,8 +102,8 @@ JOIN
     Departamento D ON C.id_departamento = D.id_departamento 
 
 
-### Diferença (EXCEPT / MINUS)
-Esta consulta lista o nome e o email dos Professores que pertencem a um Departamento específico (ex: 'Departamento de Computação', id_departamento = 50) MAS que não ministram nenhuma Turma.
+### Diferença (EXCEPT / MINUS) esta consulta lista o nome e o email dos professores que pertencem a um Departamento 
+    específico (ex: 'Departamento de Computação', id_departamento = 50) MAS que não ministram nenhuma Turma.
 
 
 SELECT
@@ -134,11 +132,11 @@ JOIN
 
 
 
-## Três consultas envolvendo os operadores LIKE, BETWEEN e IN.
+### Três consultas envolvendo os operadores LIKE, BETWEEN e IN.
+### Uso do LIKE: Pesquisa por Nome e Departamento,esta consulta lista o nome, email e departamento de todos os 
+    professores cujo nome começa com a letra 'A' e que estão alocados em um Departamento cuja sigla contenha a substring 'INF'.
 
-
-### Uso do LIKE: Pesquisa por Nome e Departamento,esta consulta lista o nome, email e departamento de todos os Professores cujo nome começa com a letra 'A' e que estão alocados em um Departamento cuja sigla contenha a substring 'INF'.
-
+    
   SELECT
     P.nome AS Nome_Professor,
     P.email AS Email_Professor,
@@ -154,8 +152,12 @@ WHERE
     P.nome LIKE 'A%' 
     AND D.sigla LIKE '%INF%'; 
 
-### Uso do BETWEEN: Avaliações em um Período Específico esta consulta retorna o Tipo e a Data das Avaliações realizadas em uma determinada Turma, dentro de um intervalo de datas (entre '2025-03-01' e '2025-03-31'), e o nome da Disciplina associada à turma.
 
+### Uso do BETWEEN: Avaliações em um Período Específico esta consulta retorna o Tipo e a Data das Avaliações 
+    realizadas em uma determinada Turma, dentro de um intervalo de datas (entre '2025-03-01' e '2025-03-31'), 
+    e o nome da Disciplina associada à turma.
+
+    
 SELECT
     V.tipo AS Tipo_Avaliacao,
     V.data AS Data_Avaliacao,
@@ -171,8 +173,12 @@ WHERE
     V.data BETWEEN '2025-03-01' AND '2025-03-31' 
     AND T.codigo_turma = 'BDOO-T01';
 
-### Uso do IN: Filtro por Múltiplas Localidades esta consulta lista a Matrícula e o Nome dos Alunos que estão matriculados em um Curso cuja Modalidade é 'Presencial' OU 'EAD' e cujo Departamento responsável está entre uma lista de IDs específicos (10, 20, 30).
 
+### Uso do IN: Filtro por Múltiplas Localidades esta consulta lista a Matrícula e o Nome dos Alunos que estão matriculados 
+    em um Curso cuja Modalidade é 'Presencial' OU 'EAD' e cujo Departamento responsável está entre uma lista de 
+    IDs específicos (10, 20, 30).
+
+    
 SELECT
     A.matricula AS Matricula_Aluno,
     A.nome AS Nome_Aluno,
