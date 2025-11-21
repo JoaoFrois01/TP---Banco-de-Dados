@@ -3,7 +3,7 @@
 ### Duas consultas envolvendo operações de junção.
 
 ### Consulta 1: Listar Disciplinas por Curso e seu Professor Coordenador esta consulta recupera o nome de todas as Disciplinas de um curso específico, o nome do Curso ao qual elas pertencem, e o nome do Professor que coordena esse curso.
-Perguntas Respondidas: Quais disciplinas pertencem ao curso 'Sistemas de Informação' e quem o coordena? (Assumindo um curso com id_curso = 101)
+### Perguntas Respondidas: Quais disciplinas pertencem ao curso 'Sistemas de Informação' e quem o coordena? (Assumindo um curso com id_curso = 101)
 
 SELECT
     C.nome AS Nome_Curso,
@@ -19,7 +19,7 @@ WHERE
     C.id_curso = 101; 
 
 ### Consulta 2: Listar Alunos e suas Notas de Avaliação em uma Turma esta consulta lista o nome e a matrícula de todos os Alunos que estão cursando um determinado Semestre, e os relaciona às suas Avaliações registradas em uma Turma específica.
-Perguntas Respondidas: Quais alunos e suas matrículas do Semestre '2024/2' têm avaliações registradas na Turma 'BD-2024'? (Assumindo numero_semestre = '2024/2' e codigo_turma = 'BD-2024')
+### Perguntas Respondidas: Quais alunos e suas matrículas do Semestre '2024/2' têm avaliações registradas na Turma 'BD-2024'? (Assumindo numero_semestre = '2024/2' e codigo_turma = 'BD-2024')
 
 SELECT
     A.matricula AS Matricula_Aluno,
@@ -44,8 +44,8 @@ WHERE
 
 ### Três consultas envolvendo operações de conjuntos (união, interseção e diferença).
 ### União
-Esta consulta lista o nome e o email de todos os indivíduos que são Professores OU Alunos e que estão alocados/cursando o Semestre '2025/1' de alguma forma.
-Lógica: Combina professores de uma turma do semestre com alunos que cursam o mesmo semestre.
+### Esta consulta lista o nome e o email de todos os indivíduos que são Professores OU Alunos e que estão alocados/cursando o Semestre '2025/1' de alguma forma.
+### Lógica: Combina professores de uma turma do semestre com alunos que cursam o mesmo semestre.
 
 
 SELECT
@@ -77,8 +77,8 @@ WHERE
 
 
 ### Interseção 
-Esta consulta lista o nome e o email dos Professores que ministram alguma Turma e ao mesmo tempo, são Coordenadores de algum Curso.
-Lógica: Encontra os professores que têm o papel de docente e o papel de gestão coordenador.
+### Esta consulta lista o nome e o email dos Professores que ministram alguma Turma e ao mesmo tempo, são Coordenadores de algum Curso.
+### Lógica: Encontra os professores que têm o papel de docente e o papel de gestão coordenador.
 
 
 SELECT
@@ -103,7 +103,7 @@ JOIN
 
 
 ### Diferença (EXCEPT / MINUS) esta consulta lista o nome e o email dos professores que pertencem a um Departamento 
-    específico (ex: 'Departamento de Computação', id_departamento = 50) MAS que não ministram nenhuma Turma.
+### específico (ex: 'Departamento de Computação', id_departamento = 50) MAS que não ministram nenhuma Turma.
 
 
 SELECT
@@ -134,7 +134,7 @@ JOIN
 
 ### Três consultas envolvendo os operadores LIKE, BETWEEN e IN.
 ### Uso do LIKE: Pesquisa por Nome e Departamento,esta consulta lista o nome, email e departamento de todos os 
-    professores cujo nome começa com a letra 'A' e que estão alocados em um Departamento cuja sigla contenha a substring 'INF'.
+### professores cujo nome começa com a letra 'A' e que estão alocados em um Departamento cuja sigla contenha a substring 'INF'.
 
     
   SELECT
@@ -154,8 +154,8 @@ WHERE
 
 
 ### Uso do BETWEEN: Avaliações em um Período Específico esta consulta retorna o Tipo e a Data das Avaliações 
-    realizadas em uma determinada Turma, dentro de um intervalo de datas (entre '2025-03-01' e '2025-03-31'), 
-    e o nome da Disciplina associada à turma.
+### realizadas em uma determinada Turma, dentro de um intervalo de datas (entre '2025-03-01' e '2025-03-31'), 
+### e o nome da Disciplina associada à turma.
 
     
 SELECT
@@ -175,8 +175,8 @@ WHERE
 
 
 ### Uso do IN: Filtro por Múltiplas Localidades esta consulta lista a Matrícula e o Nome dos Alunos que estão matriculados 
-    em um Curso cuja Modalidade é 'Presencial' OU 'EAD' e cujo Departamento responsável está entre uma lista de 
-    IDs específicos (10, 20, 30).
+### em um Curso cuja Modalidade é 'Presencial' OU 'EAD' e cujo Departamento responsável está entre uma lista de 
+### IDs específicos (10, 20, 30).
 
     
 SELECT
