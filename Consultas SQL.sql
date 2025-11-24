@@ -130,6 +130,50 @@ JOIN
 JOIN
     Disciplina DS ON DS.id_disciplina = M.id_disciplina 
 
+    
+###Quatro consultas envolvendo operações de agregação (SUM, COUNT, MAX, MIN, AVG), pelo menos
+duas das consultas devem envolver as cláusulas GROUP BY e HAVING.
+
+###Agregação 1 — COUNT + GROUP BY + HAVING
+    ###Quantidade de disciplinas por curso e semestre, listando somente cursos com mais de 3 disciplinas.
+SELECT 
+    c.nome AS curso,
+    co.semestre,
+COUNT(co.fk_Disciplina_id_disciplina) AS total_disciplinas
+FROM Curso c
+JOIN Composta co ON co.fk_Curso_id_curso = c.id_curso
+GROUP BY c.nome, co.semestre
+HAVING COUNT(co.fk_Disciplina_id_disciplina) > 3;
+
+###Agregação 2 — SUM + GROUP BY
+    ###Carga horária total por curso.
+SELECT 
+    c.nome AS curso,
+    SUM(d.carga_horaria) AS carga_total
+FROM Curso c
+JOIN Composta co ON co.fk_Curso_id_curso = c.id_curso
+JOIN Disciplina d ON d.id_disciplina = co.fk_Disciplina_id_disciplina
+GROUP BY c.nome;
+
+###Agregação 3 — MAX e MIN
+    ###Maior e menor carga horária das disciplinas.
+SELECT 
+    MAX(carga_horaria) AS maior_carga,
+    MIN(carga_horaria) AS menor_carga
+FROM Disciplina;
+
+###Agregação 4 — AVG
+    ###Média de alunos matriculados por turma.
+SELECT 
+    t.codigo_turma,
+    AVG(sub.total) AS media_alunos
+FROM Turma t
+LEFT JOIN (
+    SELECT fk_Turma_codigo_turma, COUNT(*) AS total
+    FROM Esta_matriculado
+    GROUP BY fk_Turma_codigo_turma
+) sub ON sub.fk_Turma_codigo_turma = t.codigo_turma
+GROUP BY t.codigo_turma;
 
 
 ### Três consultas envolvendo os operadores LIKE, BETWEEN e IN.
@@ -195,3 +239,32 @@ JOIN
 WHERE
     C.modalidade IN ('Presencial', 'EAD') 
     AND D.id_departamento IN (10, 20, 30);
+
+
+
+###Criar duas visões, cada uma envolvendo pelo menos três tabelas.
+
+    ###View 1 — Informações completas das turmas
+        ###Turma + Professor + Departamento (usa Ministra → Professor → Departamento → Turma)
+CREATE VIEW vw_turma_professores AS
+SELECT 
+    t.codigo_turma,
+    t.ano,
+    p.nome AS professor,
+    d.nome AS departamento
+FROM Turma t
+JOIN Ministra m ON m.fk_Turma_codigo_turma = t.codigo_turma
+JOIN Professor p ON p.id_professor = m.fk_Professor_id_professor
+JOIN Departamento d ON d.id_departamento = p.fk_Departamento_id_departamento;
+
+    ###View 2 — Estrutura das disciplinas por curso e semestre
+        ###Curso + Composta + Disciplina
+CREATE VIEW vw_curso_disciplinas AS
+SELECT
+    c.nome AS curso,
+    co.semestre,
+    d.nome AS disciplina,
+    d.carga_horaria
+FROM Curso c
+JOIN Composta co ON co.fk_Curso_id_curso = c.id_curso
+JOIN Disciplina d ON d.id_disciplina = co.fk_Disciplina_id_disciplina;
