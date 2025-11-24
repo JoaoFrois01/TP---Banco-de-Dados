@@ -156,24 +156,31 @@ JOIN Disciplina d ON d.id_disciplina = co.fk_Disciplina_id_disciplina
 GROUP BY c.nome;
 
 ###Agregação 3 — MAX e MIN
-    ###Maior e menor carga horária das disciplinas.
-SELECT 
-    MAX(carga_horaria) AS maior_carga,
-    MIN(carga_horaria) AS menor_carga
-FROM Disciplina;
+    ###Maior e menor carga horária das disciplinas por curso.
+SELECT
+    c.nome AS curso,
+    MAX(d.carga_horaria) AS maior_carga,
+    MIN(d.carga_horaria) AS menor_carga
+FROM Curso c
+JOIN Composta co ON co.fk_Curso_id_curso = c.id_curso
+JOIN Disciplina d ON d.id_disciplina = co.fk_Disciplina_id_disciplina
+GROUP BY c.nome;
 
 ###Agregação 4 — AVG
     ###Média de alunos matriculados por turma.
 SELECT 
     t.codigo_turma,
+    d.nome AS disciplina,
     AVG(sub.total) AS media_alunos
 FROM Turma t
+JOIN Disciplina d ON d.id_disciplina = t.fk_Disciplina_id_disciplina
 LEFT JOIN (
     SELECT fk_Turma_codigo_turma, COUNT(*) AS total
     FROM Esta_matriculado
     GROUP BY fk_Turma_codigo_turma
 ) sub ON sub.fk_Turma_codigo_turma = t.codigo_turma
-GROUP BY t.codigo_turma;
+GROUP BY t.codigo_turma, d.nome;
+
 
 
 ### Três consultas envolvendo os operadores LIKE, BETWEEN e IN.
