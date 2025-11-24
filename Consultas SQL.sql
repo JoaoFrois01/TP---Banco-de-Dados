@@ -1,277 +1,195 @@
-### Elaborar consultas SQL com as seguintes características (cada consulta deverá incluir, no mínimo, 3 tabelas)  
+###Elaborar consultas SQL com as seguintes caracterísƟcas (cada consulta deverá incluir, no mínimo, 3 tabelas)
 
-### Duas consultas envolvendo operações de junção.
+###Duas consultas envolvendo operações de junção (JOIN);
 
-### Consulta 1: Listar Disciplinas por Curso e seu Professor Coordenador esta consulta recupera o nome de todas as Disciplinas de um curso específico, o nome do Curso ao qual elas pertencem, e o nome do Professor que coordena esse curso.
-### Perguntas Respondidas: Quais disciplinas pertencem ao curso 'Sistemas de Informação' e quem o coordena? (Assumindo um curso com id_curso = 101)
+###Consulta 1 – Listar todas as turmas com seus professores e disciplinas.
+    ###Traz todas as turmas relacionando informações de 4 tabelas: Turma, Disciplina, Professor e Horário.
+    SELECT 
+    t.codigo_turma,
+    d.nome AS disciplina,
+    p.nome AS professor,
+    h.dia_semana,
+    h.hora,
+    h.turno
+FROM Turma t
+JOIN Disciplina d ON t.id_disciplina = d.id_disciplina
+JOIN Professor p ON t.id_professor = p.id_professor
+JOIN Horario h ON t.hora = h.hora 
+    AND t.dia_semana = h.dia_semana
+    AND t.turno = h.turno;
 
-SELECT
-    C.nome AS Nome_Curso,
-    P.nome AS Nome_Coordenador,
-    D.nome AS Nome_Disciplina
-FROM
-    Curso C 
-JOIN
-    Professor P ON C.coordenador = P.id_professor 
-JOIN
-    Disciplina D ON C.id_curso = D.id_curso
-WHERE
-    C.id_curso = 101; 
+###Consulta 2 – Disciplinas por curso com período (Composta)
+    ###Mostra as disciplinas que pertencem a cada curso e o semestre correspondente, unindo Curso, Composta e Disciplina.
+    SELECT 
+    c.nome AS curso,
+    d.nome AS disciplina,
+    comp.semestre
+FROM Curso c
+JOIN Composta comp ON c.id_curso = comp.id_curso
+JOIN Disciplina d ON comp.id_disciplina = d.id_disciplina
+ORDER BY c.nome, comp.semestre;
 
-### Consulta 2: Listar Alunos e suas Notas de Avaliação em uma Turma esta consulta lista o nome e a matrícula de todos os Alunos que estão cursando um determinado Semestre, e os relaciona às suas Avaliações registradas em uma Turma específica.
-### Perguntas Respondidas: Quais alunos e suas matrículas do Semestre '2024/2' têm avaliações registradas na Turma 'BD-2024'? (Assumindo numero_semestre = '2024/2' e codigo_turma = 'BD-2024')
+___________________________________________________________________________________________________________________________________________________________________________________________________________________
+###Três consultas envolvendo operações de conjuntos (união, interseção e diferença).
 
-SELECT
-    A.matricula AS Matricula_Aluno,
-    A.nome AS Nome_Aluno,
-    S.descricao AS Semestre,
-    T.codigo_turma AS Codigo_Turma,
-    V.tipo AS Tipo_Avaliacao,
-    V.data AS Data_Avaliacao
-FROM
-    Aluno A 
-JOIN
-    Cursa_Semestre CS ON A.matricula = CS.matricula 
-JOIN
-    Semestre S ON CS.numero_semestre = S.numero_semestre 
-JOIN
-    Turma T ON T.numero_semestre = S.numero_semestre 
-LEFT JOIN
-    Avaliacao V ON T.codigo_turma = V.codigo_turma AND V.matricula_aluno = A.matricula 
-WHERE
-    S.numero_semestre = '2024/2'
-    AND T.codigo_turma = 'BD-2024';
+###Consulta 1 – UNION
+    ###Combina Professores e alunos com e-mail, mais disciplina vinculada, retornando nomes e e-mails sem duplicações.
+   SELECT p.nome, p.email, d.nome AS departamento_ou_disciplina
+FROM Professor p
+JOIN Departamento d ON p.id_departamento = d.id_departamento
 
-### Três consultas envolvendo operações de conjuntos (união, interseção e diferença).
-### União
-### Esta consulta lista o nome e o email de todos os indivíduos que são Professores OU Alunos e que estão alocados/cursando o Semestre '2025/1' de alguma forma.
-### Lógica: Combina professores de uma turma do semestre com alunos que cursam o mesmo semestre.
-
-
-SELECT
-    P.nome AS Nome,
-    P.email AS Email,
-    'Professor' AS Tipo_Individuo
-FROM
-    Professor P
-JOIN
-    Ministra M ON P.id_professor = M.id_professor 
-JOIN
-    Turma T ON M.codigo_turma = T.codigo_turma AND M.ano = T.ano 
-WHERE
-    T.numero_semestre = '2025/1' 
 UNION
 
-SELECT
-    A.nome AS Nome,
-    A.email AS Email,
-    'Aluno' AS Tipo_Individuo
-FROM
-    Aluno A
-JOIN
-    Cursa_Semestre CS ON A.matricula = CS.matricula 
-JOIN
-    Semestre S ON CS.numero_semestre = S.numero_semestre 
-WHERE
-    S.numero_semestre = '2025/1';
+SELECT a.nome, a.email, dis.nome AS departamento_ou_disciplina
+FROM Aluno a
+JOIN Matricula_Turma mt ON a.matricula = mt.matricula
+JOIN Turma t ON mt.codigo_turma = t.codigo_turma
+JOIN Disciplina dis ON t.id_disciplina = dis.id_disciplina;
 
+###Consulta 2 – INTERSECT
+    ###Retorna pessoas com nomes que aparecem em Professor, Aluno e Departamento
+     SELECT p.nome
+FROM Professor p
+JOIN Departamento d ON p.id_departamento = d.id_departamento
 
-### Interseção 
-### Esta consulta lista o nome e o email dos Professores que ministram alguma Turma e ao mesmo tempo, são Coordenadores de algum Curso.
-### Lógica: Encontra os professores que têm o papel de docente e o papel de gestão coordenador.
-
-
-SELECT
-    P.nome AS Nome,
-    P.email AS Email
-FROM
-    Professor P 
-JOIN
-    Ministra M ON P.id_professor = M.id_professor 
-JOIN
-    Turma T ON M.codigo_turma = T.codigo_turma AND M.ano = T.ano 
 INTERSECT
-SELECT
-    P.nome AS Nome,
-    P.email AS Email
-FROM
-    Professor P 
-JOIN
-    Curso C ON P.id_professor = C.coordenador 
-JOIN
-    Departamento D ON C.id_departamento = D.id_departamento 
 
+SELECT a.nome
+FROM Aluno a
+JOIN Matricula_Turma mt ON a.matricula = mt.matricula
+JOIN Turma t ON mt.codigo_turma = t.codigo_turma;
 
-### Diferença (EXCEPT / MINUS) esta consulta lista o nome e o email dos professores que pertencem a um Departamento 
-### específico (ex: 'Departamento de Computação', id_departamento = 50) MAS que não ministram nenhuma Turma.
-
-
-SELECT
-    P.nome AS Nome,
-    P.email AS Email
-FROM
-    Professor P
-JOIN
-    Departamento D ON P.id_departamento = D.id_departamento
-JOIN
-    Curso C ON D.id_departamento = C.id_departamento 
-WHERE
-    P.id_departamento = 50
+###Consulta 3 - (EXCEPT)
+    ###Disciplinas existentes EXCETO as ofertadas em Turma.
+    SELECT d.nome
+FROM Disciplina d
+JOIN Composta c ON d.id_disciplina = c.id_disciplina
+JOIN Curso cu ON cu.id_curso = c.id_curso
 
 EXCEPT
 
-SELECT
-    P.nome AS Nome,
-    P.email AS Email
-FROM
-    Professor P 
-JOIN
-    Ministra M ON P.id_professor = M.id_professor
-JOIN
-    Disciplina DS ON DS.id_disciplina = M.id_disciplina 
+SELECT d2.nome
+FROM Disciplina d2
+JOIN Turma t ON d2.id_disciplina = t.id_disciplina
+JOIN Horario h ON t.hora = h.hora 
+               AND t.dia_semana = h.dia_semana
+               AND t.turno = h.turno;
 
-    
-###Quatro consultas envolvendo operações de agregação (SUM, COUNT, MAX, MIN, AVG), pelo menos
-duas das consultas devem envolver as cláusulas GROUP BY e HAVING.
+____________________________________________________________________________________________________________________________________________________________________________________________________________________
+###Quatro consultas envolvendo operações de agregação (SUM, COUNT, MAX, MIN, AVG), pelo menos duas das consultas devem envolver as cláusulas GROUP BY e HAVING
 
-###Agregação 1 — COUNT + GROUP BY + HAVING
-    ###Quantidade de disciplinas por curso e semestre, listando somente cursos com mais de 3 disciplinas.
-SELECT 
+###Consulta 1 — COUNT
+    ###Quantidade de turmas por professor (Professor + Turma + Disciplina)
+    SELECT 
+    p.nome AS professor,
+    COUNT(t.codigo_turma) AS total_turmas
+FROM Professor p
+JOIN Turma t ON p.id_professor = t.id_professor
+JOIN Disciplina d ON t.id_disciplina = d.id_disciplina
+GROUP BY p.nome;
+
+###Consulta 2 - MAX e MIN
+    ###Maior e menor carga horária de disciplinas por curso (Curso + Composta + Disciplina)
+   SELECT
     c.nome AS curso,
-    co.semestre,
-COUNT(co.fk_Disciplina_id_disciplina) AS total_disciplinas
+    MAX(d.carga_horaria) AS maior_ch,
+    MIN(d.carga_horaria) AS menor_ch
 FROM Curso c
-JOIN Composta co ON co.fk_Curso_id_curso = c.id_curso
-GROUP BY c.nome, co.semestre
-HAVING COUNT(co.fk_Disciplina_id_disciplina) > 3;
+JOIN Composta comp ON c.id_curso = comp.id_curso
+JOIN Disciplina d ON comp.id_disciplina = d.id_disciplina
+GROUP BY c.nome;
 
-###Agregação 2 — SUM + GROUP BY
-    ###Carga horária total por curso.
-SELECT 
+###Consulta 3 - AVG
+    ###Média da carga horária por curso (Curso + Composta + Disciplina)
+    SELECT 
     c.nome AS curso,
+    AVG(d.carga_horaria) AS media_ch
+FROM Curso c
+JOIN Composta comp ON c.id_curso = comp.id_curso
+JOIN Disciplina d ON comp.id_disciplina = d.id_disciplina
+GROUP BY c.nome;
+
+###Consulta 4 - SUM + HAVING
+    ###Total de carga horária de cada professor somando todas as disciplinas que ele ministra (Professor + Turma + Disciplina)
+    SELECT
+    p.nome AS professor,
     SUM(d.carga_horaria) AS carga_total
-FROM Curso c
-JOIN Composta co ON co.fk_Curso_id_curso = c.id_curso
-JOIN Disciplina d ON d.id_disciplina = co.fk_Disciplina_id_disciplina
-GROUP BY c.nome;
+FROM Professor p
+JOIN Turma t ON p.id_professor = t.id_professor
+JOIN Disciplina d ON t.id_disciplina = d.id_disciplina
+GROUP BY p.nome
+HAVING SUM(d.carga_horaria) > 100;
 
-###Agregação 3 — MAX e MIN
-    ###Maior e menor carga horária das disciplinas por curso.
-SELECT
-    c.nome AS curso,
-    MAX(d.carga_horaria) AS maior_carga,
-    MIN(d.carga_horaria) AS menor_carga
-FROM Curso c
-JOIN Composta co ON co.fk_Curso_id_curso = c.id_curso
-JOIN Disciplina d ON d.id_disciplina = co.fk_Disciplina_id_disciplina
-GROUP BY c.nome;
+__________________________________________________________________________________________________________________________________________________________________________________________________________________
+###Três consultas envolvendo os operadores LIKE, BETWEEN e IN
 
-###Agregação 4 — AVG
-    ###Média de alunos matriculados por turma.
-SELECT 
-    t.codigo_turma,
-    d.nome AS disciplina,
-    AVG(sub.total) AS media_alunos
-FROM Turma t
-JOIN Disciplina d ON d.id_disciplina = t.fk_Disciplina_id_disciplina
-LEFT JOIN (
-    SELECT fk_Turma_codigo_turma, COUNT(*) AS total
-    FROM Esta_matriculado
-    GROUP BY fk_Turma_codigo_turma
-) sub ON sub.fk_Turma_codigo_turma = t.codigo_turma
-GROUP BY t.codigo_turma, d.nome;
+###Consulta 1 (LIKE) — Professores com e-mail institucional + departamento + turmas
+    SELECT 
+    p.nome,
+    p.email,
+    d.sigla AS departamento,
+    t.codigo_turma
+FROM Professor p
+JOIN Departamento d ON p.id_departamento = d.id_departamento
+LEFT JOIN Turma t ON p.id_professor = t.id_professor
+WHERE p.email LIKE '%@pucminas.br';
 
-
-
-### Três consultas envolvendo os operadores LIKE, BETWEEN e IN.
-### Uso do LIKE: Pesquisa por Nome e Departamento,esta consulta lista o nome, email e departamento de todos os 
-### professores cujo nome começa com a letra 'A' e que estão alocados em um Departamento cuja sigla contenha a substring 'INF'.
-
-    
-  SELECT
-    P.nome AS Nome_Professor,
-    P.email AS Email_Professor,
-    D.nome AS Nome_Departamento,
-    D.sigla AS Sigla_Departamento
-FROM
-    Professor P 
-JOIN
-    Departamento D ON P.id_departamento = D.id_departamento 
-JOIN
-    Turma T ON P.id_professor = T.id_professor_ministrante 
-WHERE
-    P.nome LIKE 'A%' 
-    AND D.sigla LIKE '%INF%'; 
-
-
-### Uso do BETWEEN: Avaliações em um Período Específico esta consulta retorna o Tipo e a Data das Avaliações 
-### realizadas em uma determinada Turma, dentro de um intervalo de datas (entre '2025-03-01' e '2025-03-31'), 
-### e o nome da Disciplina associada à turma.
-
-    
-SELECT
-    V.tipo AS Tipo_Avaliacao,
-    V.data AS Data_Avaliacao,
-    T.codigo_turma AS Codigo_Turma,
-    D.nome AS Nome_Disciplina
-FROM
-    Avaliacao V 
-JOIN
-    Turma T ON V.codigo_turma = T.codigo_turma AND V.ano = T.ano 
-JOIN
-    Disciplina D ON T.id_disciplina = D.id_disciplina 
-WHERE
-    V.data BETWEEN '2025-03-01' AND '2025-03-31' 
-    AND T.codigo_turma = 'BDOO-T01';
-
-
-### Uso do IN: Filtro por Múltiplas Localidades esta consulta lista a Matrícula e o Nome dos Alunos que estão matriculados 
-### em um Curso cuja Modalidade é 'Presencial' OU 'EAD' e cujo Departamento responsável está entre uma lista de 
-### IDs específicos (10, 20, 30).
-
-    
-SELECT
-    A.matricula AS Matricula_Aluno,
-    A.nome AS Nome_Aluno,
-    C.nome AS Nome_Curso,
-    C.modalidade AS Modalidade_Curso
-FROM
-    Aluno A
-JOIN
-    Cursa_Curso CC ON A.matricula = CC.matricula
-JOIN
-    Curso C ON CC.id_curso = C.id_curso 
-JOIN
-    Departamento D ON C.id_departamento = D.id_departamento 
-WHERE
-    C.modalidade IN ('Presencial', 'EAD') 
-    AND D.id_departamento IN (10, 20, 30);
-
-
-
-###Criar duas visões, cada uma envolvendo pelo menos três tabelas.
-
-    ###View 1 — Informações completas das turmas
-        ###Turma + Professor + Departamento (usa Ministra → Professor → Departamento → Turma)
-CREATE VIEW vw_turma_professores AS
-SELECT 
+###Consulta 2 (BETWEEN) — Turmas 2020–2025 com disciplina e professor
+    SELECT 
     t.codigo_turma,
     t.ano,
-    p.nome AS professor,
-    d.nome AS departamento
-FROM Turma t
-JOIN Ministra m ON m.fk_Turma_codigo_turma = t.codigo_turma
-JOIN Professor p ON p.id_professor = m.fk_Professor_id_professor
-JOIN Departamento d ON d.id_departamento = p.fk_Departamento_id_departamento;
-
-    ###View 2 — Estrutura das disciplinas por curso e semestre
-        ###Curso + Composta + Disciplina
-CREATE VIEW vw_curso_disciplinas AS
-SELECT
-    c.nome AS curso,
-    co.semestre,
     d.nome AS disciplina,
-    d.carga_horaria
-FROM Curso c
-JOIN Composta co ON co.fk_Curso_id_curso = c.id_curso
-JOIN Disciplina d ON d.id_disciplina = co.fk_Disciplina_id_disciplina;
+    p.nome AS professor
+FROM Turma t
+JOIN Disciplina d ON t.id_disciplina = d.id_disciplina
+JOIN Professor p ON t.id_professor = p.id_professor
+WHERE t.ano BETWEEN 2020 AND 2025;
+
+###Consulta 3 (IN) — Alunos matriculados em turmas específicas com disciplina
+    SELECT 
+    a.nome AS aluno,
+    mt.codigo_turma,
+    d.nome AS disciplina
+FROM Aluno a
+JOIN Matricula_Turma mt ON a.matricula = mt.matricula
+JOIN Turma t ON mt.codigo_turma = t.codigo_turma
+JOIN Disciplina d ON t.id_disciplina = d.id_disciplina
+WHERE mt.codigo_turma IN ('ADS101', 'ADS205', 'ADS307');
+
+________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+###Criar duas visões, cada uma envolvendo pelo menos três tabelas
+
+###VIEW 1 — Matrículas completas (Aluno + Matrícula_Turma + Turma + Disciplina + Professor)
+    CREATE VIEW vw_matriculas AS
+SELECT 
+    a.nome AS aluno,
+    t.codigo_turma,
+    d.nome AS disciplina,
+    p.nome AS professor
+FROM Aluno a
+JOIN Matricula_Turma mt ON a.matricula = mt.matricula
+JOIN Turma t ON mt.codigo_turma = t.codigo_turma
+JOIN Disciplina d ON t.id_disciplina = d.id_disciplina
+JOIN Professor p ON t.id_professor = p.id_professor;
+
+###VIEW 2 — Alocação completa (Turma + Disciplina + Alocacao + Horario)
+    CREATE VIEW vw_alocacoes AS
+SELECT 
+    t.codigo_turma,
+    d.nome AS disciplina,
+    a.sala,
+    h.dia_semana,
+    h.hora,
+    h.turno
+FROM Turma t
+JOIN Disciplina d ON t.id_disciplina = d.id_disciplina
+JOIN Alocacao a 
+     ON t.hora = a.hora 
+    AND t.dia_semana = a.dia_semana
+    AND t.turno = a.turno
+JOIN Horario h 
+     ON a.hora = h.hora 
+    AND a.dia_semana = h.dia_semana
+    AND a.turno = h.turno;
+
